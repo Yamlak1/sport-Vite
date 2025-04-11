@@ -1,0 +1,164 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Work+Sans:ital@0;1&display=swap");
+
+@layer base {
+  :root {
+    --background: 350 33% 98%;
+    --foreground: 350 10% 15%;
+
+    --card: 350 33% 98%;
+    --card-foreground: 350 10% 15%;
+
+    --popover: 350 33% 98%;
+    --popover-foreground: 350 10% 15%;
+
+    --primary: 325 90% 65%;
+    --primary-foreground: 350 33% 98%;
+
+    --secondary: 320 15% 90%;
+    --secondary-foreground: 350 10% 15%;
+
+    --muted: 320 15% 90%;
+    --muted-foreground: 350 10% 40%;
+
+    --accent: 325 25% 90%;
+    --accent-foreground: 350 10% 15%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 350 33% 98%;
+
+    --border: 320 20% 87%;
+    --input: 320 20% 87%;
+    --ring: 325 90% 65%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 350 33% 98%;
+    --sidebar-foreground: 350 10% 40%;
+    --sidebar-primary: 325 90% 65%;
+    --sidebar-primary-foreground: 350 33% 98%;
+    --sidebar-accent: 320 15% 90%;
+    --sidebar-accent-foreground: 350 10% 15%;
+    --sidebar-border: 320 20% 87%;
+    --sidebar-ring: 325 90% 65%;
+  }
+
+  .dark {
+    --background: 350 20% 10%;
+    --foreground: 350 20% 90%;
+
+    --card: 350 20% 10%;
+    --card-foreground: 350 20% 90%;
+
+    --popover: 350 20% 10%;
+    --popover-foreground: 350 20% 90%;
+
+    --primary: 325 90% 65%;
+    --primary-foreground: 350 20% 10%;
+
+    --secondary: 320 15% 20%;
+    --secondary-foreground: 350 20% 90%;
+
+    --muted: 320 15% 20%;
+    --muted-foreground: 350 20% 70%;
+
+    --accent: 325 25% 20%;
+    --accent-foreground: 350 20% 90%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 350 20% 90%;
+
+    --border: 320 15% 20%;
+    --input: 320 15% 20%;
+    --ring: 325 90% 65%;
+
+    --sidebar-background: 350 20% 10%;
+    --sidebar-foreground: 350 20% 70%;
+    --sidebar-primary: 325 90% 65%;
+    --sidebar-primary-foreground: 350 20% 10%;
+    --sidebar-accent: 320 15% 20%;
+    --sidebar-accent-foreground: 350 20% 90%;
+    --sidebar-border: 320 15% 20%;
+    --sidebar-ring: 325 90% 65%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Football scrollbar styles */
+@keyframes roll {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.football-scrollbar {
+  scrollbar-width: none; /* For Firefox */
+  -ms-overflow-style: none; /* For Internet Explorer and Edge */
+  overflow-x: auto;
+  position: relative;
+  padding-bottom: 30px; /* Space for the custom scrollbar */
+}
+
+.football-scrollbar::-webkit-scrollbar {
+  display: none; /* Hide default scrollbar for Chrome/Safari/Opera */
+}
+
+.football-scrollbar-container {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.football-scrollbar-track {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 24px;
+  background: linear-gradient(
+    to right,
+    #7ec632 0%,
+    #7ec632 10%,
+    #8fda3f 10%,
+    #8fda3f 20%,
+    #7ec632 20%,
+    #7ec632 30%,
+    #8fda3f 30%,
+    #8fda3f 40%,
+    #7ec632 40%,
+    #7ec632 50%,
+    #8fda3f 50%,
+    #8fda3f 60%,
+    #7ec632 60%,
+    #7ec632 70%,
+    #8fda3f 70%,
+    #8fda3f 80%,
+    #7ec632 80%,
+    #7ec632 90%,
+    #8fda3f 90%,
+    #8fda3f 100%
+  ); /* Football field grass pattern */
+  border-radius: 12px;
+  margin: 0 10px;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+  border: 1px solid #5a9e1f;
+}
+
+.scoreboard-shape {
+  clip-path: polygon(20% 0, 80% 0, 70% 80%, 30% 80%);
+}
