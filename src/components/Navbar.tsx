@@ -72,7 +72,7 @@ export const Navbar = () => {
   const { t, language, setLanguage } = useLanguage();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
-  const [chatId, setChatId] = useState("");
+  const [chatId, setChatId] = useState("499416454");
   const [firstName, setFirstName] = useState("");
   const [name, setName] = useState("");
   const [leagues, setLeagues] = useState<League[]>([]);

@@ -1,7 +1,7 @@
 import axios from "axios";
 const baseUrl =
-  // "https://sports-backend-nest-584017102322.us-central1.run.app/api-football";
-  "http://localhost:3000/api-football";
+  "https://sports-backend-nest-584017102322.us-central1.run.app/api-football";
+// "http://localhost:3000/api-football";
 
 export async function getLiveFootball() {
   try {

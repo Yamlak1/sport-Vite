@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const baseUrl =
-  // "https://sports-backend-nest-584017102322.us-central1.run.app/transactions";
-  "http://localhost:3001/transactions";
+  "https://sports-backend-nest-584017102322.us-central1.run.app/transactions";
+// "http://localhost:3001/transactions";
 
 export async function deposit(
   amount: number,

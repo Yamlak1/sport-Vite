@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const baseUrl =
-  // "https://sports-backend-nest-584017102322.us-central1.run.app/players";
-  "http://localhost:3000/players";
+  "https://sports-backend-nest-584017102322.us-central1.run.app/players";
+// "http://localhost:3000/players";
 
 export interface Player {
   _id: string;
