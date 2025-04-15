@@ -1,7 +1,7 @@
 import axios from "axios";
 const baseUrl =
   "https://sports-backend-nest-584017102322.us-central1.run.app/api-football";
-// "http://localhost:3000/api-football";
+// "http://localhost:8080/api-football";
 
 export async function getLiveFootball() {
   try {
@@ -109,4 +109,39 @@ export async function getFixturesById(fixtureId: number) {
     );
     return response.data;
   } catch (error) {}
+}
+
+export async function getFixtureStat(fixtureId: number, teamId: number) {
+  try {
+    const response = await axios.get(
+      `${baseUrl}/matchStat/${fixtureId}/${teamId}`
+    );
+    console.log(response);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching Stat: ", error);
+    throw error;
+  }
+}
+
+export async function getLeagueStanding(leagueId: number) {
+  try {
+    const response = await axios.get(`${baseUrl}/leagueStanding/${leagueId}`);
+    return response.data;
+  } catch (error) {
+    console.error("error getting standing", error);
+    throw error;
+  }
+}
+
+export async function getLastGames(homeId: number, awayId: number) {
+  try {
+    const response = await axios.get(
+      `${baseUrl}/lastGames/${homeId}/${awayId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("error getting last games", error);
+    throw error;
+  }
 }

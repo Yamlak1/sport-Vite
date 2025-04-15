@@ -17,7 +17,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { leagueStandings } from "@/data/leagueStandings";
 import { pastFixtures } from "@/data/pastFixtures";
 import { placedBets } from "@/data/placedBets";
 import { useToast } from "@/hooks/use-toast";
@@ -25,7 +24,12 @@ import { saveBet } from "@/services/betServices";
 import { useUser } from "@/hooks/useUser";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { updateBalance } from "@/redux/slices/playerSlice";
-import { getMatchOdds } from "@/services/oddsApiServices";
+import {
+  getFixtureStat,
+  getLastGames,
+  getLeagueStanding,
+  getMatchOdds,
+} from "@/services/oddsApiServices";
 import { Navbar } from "@/components/Navbar";
 import { addBet, removeBet } from "@/redux/slices/betSlipSlice";
 import { MatchCard } from "@/components/MatchCard";
@@ -37,6 +41,10 @@ import { homePositions, awayPositions, mapLineup } from "@/data/positions";
 import { teamImages } from "@/data/teamImages";
 import { betTypes } from "@/data/betTypes";
 import AdBanner from "@/components/adBanner";
+import StatisticsComparison from "@/components/StatisticsComparison";
+import { mapLeagueStanding } from "@/lib/mapLeagueStanding";
+import { LeagueStandingsTable } from "@/components/leagueTable";
+import { PastFixturesList } from "@/components/pastFixtures";
 
 // Interfaces
 interface BetValue {
@@ -124,6 +132,15 @@ const MatchDetails = () => {
   const [stake, setStake] = useState<number>(5);
   const [stakeError, setStakeError] = useState<string>("");
   const betSlip = useAppSelector((state) => state.betSlip);
+  const [teamStats, setTeamStats] = useState<{
+    home: any | null;
+    away: any | null;
+  }>({ home: null, away: null });
+  const [leagueStandings, setLeagueStandings] = useState<any>(null);
+  const [isStandingsLoading, setIsStandingsLoading] = useState<boolean>(false);
+  const [pastFixtures, setPastFixtures] = useState<any[]>([]);
+  const [isPastFixturesLoading, setIsPastFixturesLoading] =
+    useState<boolean>(false);
 
   // Get match information from Redux instead of location state
   const selectedMatch = useAppSelector((state) => state.match.selectedMatch);
@@ -215,6 +232,7 @@ const MatchDetails = () => {
               awayScore: selectedMatch?.awayScore,
               status: selectedMatch?.status || "Upcoming",
               league: oddsData.data[0].league?.name || "",
+              leagueId: oddsData.data[0].league?.id || "",
               commenceTime: oddsData.data[0].fixture?.date || "",
 
               // Always use the default lineup here
@@ -244,6 +262,70 @@ const MatchDetails = () => {
 
     fetchMatchData();
   }, [id, toast, selectedMatch]); // Note: defaultLineup is not included now
+
+  useEffect(() => {
+    const fetchTeamStats = async () => {
+      if (
+        selectedMatch &&
+        selectedMatch.id &&
+        selectedMatch.homeTeamId &&
+        selectedMatch.awayTeamId
+      ) {
+        try {
+          // Fetch home and away stats concurrently using Promise.all
+          const [homeStat, awayStat] = await Promise.all([
+            getFixtureStat(selectedMatch.id, selectedMatch.homeTeamId),
+            getFixtureStat(selectedMatch.id, selectedMatch.awayTeamId),
+          ]);
+          // Save the stats in state
+          setTeamStats({
+            home: homeStat,
+            away: awayStat,
+          });
+        } catch (error) {
+          console.error("Error fetching team stats:", error);
+        }
+      }
+    };
+
+    fetchTeamStats();
+  }, [selectedMatch]);
+
+  useEffect(() => {
+    const fetchStandings = async () => {
+      try {
+        setIsStandingsLoading(true);
+        const standingsData = await getLeagueStanding(selectedMatch.leagueId);
+        const finalStandings = mapLeagueStanding(standingsData);
+        console.log("Final Standings:", finalStandings); // For debugging purposes
+        // Use the transformed data
+        setLeagueStandings(finalStandings);
+      } catch (error) {
+        console.error("Error fetching league standings", error);
+      } finally {
+        setIsStandingsLoading(false);
+      }
+    };
+    fetchStandings();
+  }, [matchOdds]);
+
+  useEffect(() => {
+    const fetchPastFixtures = async () => {
+      try {
+        const homeId = selectedMatch.homeTeamId;
+        const awayId = selectedMatch.awayTeamId;
+        setIsPastFixturesLoading(true);
+        const pastGamesData = await getLastGames(homeId, awayId);
+        console.log("PAst", pastGamesData);
+        setPastFixtures(pastGamesData.response || pastGamesData);
+      } catch (error) {
+        console.error("Error fetching past fixtures", error);
+      } finally {
+        setIsPastFixturesLoading(false);
+      }
+    };
+    fetchPastFixtures();
+  }, []);
 
   // Handle initial odds selection from URL
   useEffect(() => {
@@ -349,17 +431,6 @@ const MatchDetails = () => {
     }
 
     try {
-      // await Promise.all(
-      //   betSlip.selectedBets.map((bet) =>
-      //     saveBet(
-      //       { ...match, id: bet.fixtureId },
-      //       [{ type: bet.type, option: bet.option }],
-      //       stake
-      //     )
-      //   )
-      // );
-
-      // dispatch(updateBalance(balance - stake * betSlip.selectedBets.length));
       toast({
         title: "Bets placed successfully!",
         description: "You can view your bets in the betting history.",
@@ -664,75 +735,36 @@ const MatchDetails = () => {
 
         {activeTab === "statistics" && (
           <div>
-            <div className="mb-8 mt-4 bg-primary/40 dark:bg-primary/90 flex p-3 flex-col rounded-xl shadow-xl">
-              <div className="flex items-start justify-between">
-                <h4 className="text-lg font-workSans text-gray-900 mb-2">
-                  League Standings
-                </h4>
-                <span className="text-xs text-blue-500 underline">
-                  View all
-                </span>
-              </div>
-              <div className="w-full overflow-x-auto">
-                <table className="min-w-full table-fixed text-sm text-gray-900">
-                  <thead>
-                    <tr>
-                      <th className="px-4 py-2">Pos</th>
-                      <th className="px-4 py-2">Team</th>
-                      <th className="px-4 py-2">P</th>
-                      <th className="px-4 py-2">W</th>
-                      <th className="px-4 py-2">D</th>
-                      <th className="px-4 py-2">L</th>
-                      <th className="px-4 py-2">Pts</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {leagueStandings["English PL"]?.map((team) => (
-                      <tr key={team.team} className="border-t border-gray-700">
-                        <td className="px-4 py-2">{team.position}</td>
-                        <td className="px-4 py-2">{team.team}</td>
-                        <td className="px-4 py-2">{team.played}</td>
-                        <td className="px-4 py-2">{team.win}</td>
-                        <td className="px-4 py-2">{team.draw}</td>
-                        <td className="px-4 py-2">{team.loss}</td>
-                        <td className="px-4 py-2">{team.points}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+            <h3 className="text-xl font-bold mb-4">Team Statistics</h3>
+            {teamStats.home && teamStats.away ? (
+              <StatisticsComparison
+                homeStats={teamStats.home}
+                awayStats={teamStats.away}
+              />
+            ) : (
+              // If either is null or still loading, show a loading message
+              <p>Loading Stats...</p>
+            )}
+
+            {/* You can also keep your existing league standings and past fixtures here, if desired */}
+            <div className="mt-8">
+              <h4 className="font-semibold mb-2">League Standings</h4>
+              <LeagueStandingsTable
+                leagueStandings={leagueStandings}
+                isStandingsLoading={isStandingsLoading}
+              />
             </div>
 
-            <div className="mb-4 mt-4 bg-primary/40 dark:bg-primary/90 flex p-3 flex-col rounded-xl shadow-xl">
-              <div className="flex items-start ">
-                <h4 className="text-lg font-workSans text-gray-900 mb-2">
-                  Past Fixtures
-                </h4>{" "}
-              </div>
-              <div className="w-full overflow-x-auto">
-                <table className="min-w-full table-fixed text-sm text-gray-900">
-                  <thead>
-                    <tr>
-                      <th className="px-4 py-2">Date</th>
-                      <th className="px-4 py-2">Home</th>
-                      <th className="px-4 py-2">Score</th>
-                      <th className="px-4 py-2">Away</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {pastFixtures.map((fixture) => (
-                      <tr key={fixture.id} className="border-t border-gray-700">
-                        <td className="px-4 py-2">
-                          {new Date(fixture.date).toLocaleDateString()}
-                        </td>
-                        <td className="px-4 py-2">{fixture.homeTeam}</td>
-                        <td className="px-4 py-2">{fixture.score}</td>
-                        <td className="px-4 py-2">{fixture.awayTeam}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+            {/* Past Fixtures Section */}
+            <div className="mt-8">
+              <h4 className="font-semibold mb-2">Past Fixtures</h4>
+              {isPastFixturesLoading ? (
+                <p>Loading past fixtures...</p>
+              ) : pastFixtures && pastFixtures.length > 0 ? (
+                <PastFixturesList data={pastFixtures} />
+              ) : (
+                <p>No past fixtures available</p>
+              )}
             </div>
           </div>
         )}

@@ -10,7 +10,9 @@ import {
 interface MatchCardProps {
   id: number;
   homeTeam: string;
+  homeTeamId: number;
   awayTeam: string;
+  awayTeamId: number;
   homeTeamImage: string;
   awayTeamImage: string;
   homeScore: number;
@@ -18,6 +20,7 @@ interface MatchCardProps {
   status: string;
   elapsed?: number; // elapsed time in minutes
   league: string;
+  leagueId: number;
   venue: string;
   week: string;
   commenceTime: string;
@@ -71,7 +74,9 @@ const transformLineup = (
 export const MatchCard: React.FC<MatchCardProps> = ({
   id,
   homeTeam,
+  homeTeamId,
   awayTeam,
+  awayTeamId,
   homeTeamImage,
   awayTeamImage,
   homeScore,
@@ -79,6 +84,7 @@ export const MatchCard: React.FC<MatchCardProps> = ({
   status,
   elapsed,
   league,
+  leagueId,
   venue,
   week,
   commenceTime,
@@ -131,11 +137,14 @@ export const MatchCard: React.FC<MatchCardProps> = ({
         setSelectedMatch({
           id,
           homeTeam,
+          homeTeamId,
           awayTeam,
+          awayTeamId,
           homeTeamImage,
           awayTeamImage,
           status,
           league,
+          leagueId,
           venue,
           week,
           commenceTime,
@@ -158,11 +167,14 @@ export const MatchCard: React.FC<MatchCardProps> = ({
       setSelectedMatch({
         id,
         homeTeam,
+        homeTeamId,
         awayTeam,
+        awayTeamId,
         homeTeamImage,
         awayTeamImage,
         status,
         league,
+        leagueId,
         venue,
         week,
         commenceTime,

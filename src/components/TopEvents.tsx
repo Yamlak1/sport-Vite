@@ -163,7 +163,7 @@ export const TopEvents = () => {
           : Array.isArray(response.data)
           ? response.data
           : null;
-
+        console.log(response);
         if (!fixturesData) {
           throw new Error("Invalid API response format");
         }
@@ -230,13 +230,16 @@ export const TopEvents = () => {
             return {
               id: match.fixture.id,
               homeTeam: match.teams.home.name,
+              homeTeamId: match.teams.home.id,
               awayTeam: match.teams.away.name,
+              awayTeamId: match.teams.away.id,
               homeTeamImage: match.teams.home.logo,
               awayTeamImage: match.teams.away.logo,
               homeScore: match.goals.home ?? 0,
               awayScore: match.goals.away ?? 0,
               status: match.fixture.status.short,
               league: match.league.name,
+              leagueId: match.league.id,
               venue: match.fixture.venue.name,
               week: match.league.round,
               // Pass the full fixture date as the commenceTime.
@@ -553,11 +556,14 @@ export const TopEvents = () => {
               key={fixture.id}
               id={fixture.id}
               homeTeam={fixture.homeTeam}
+              homeTeamId={fixture.homeTeamId}
+              awayTeamId={fixture.awayTeamId}
               awayTeam={fixture.awayTeam}
               homeTeamImage={fixture.homeTeamImage}
               awayTeamImage={fixture.awayTeamImage}
               status={fixture.status}
               league={fixture.league}
+              leagueId={fixture.leagueId}
               venue={fixture.venue}
               week={fixture.week}
               commenceTime={fixture.commenceTime}

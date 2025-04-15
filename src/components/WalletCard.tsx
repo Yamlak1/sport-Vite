@@ -9,7 +9,7 @@ import { Wallet } from "lucide-react";
 
 export const WalletCard = () => {
   const { t } = useLanguage();
-  const [telegramId, setTelegramId] = useState("");
+  const [telegramId, setTelegramId] = useState("499416454");
   const [walletBalance, setWalletBalance] = useState("");
   const [userData, setUserData] = useState(null);
   const [firstName, setFirstName] = useState(null);
