@@ -756,7 +756,8 @@ const MatchDetails = () => {
             </div>
 
             {/* Past Fixtures Section */}
-            <div className="mt-8">
+            <div className="mt-8"> 
+              
               <h4 className="font-semibold mb-2">Past Fixtures</h4>
               {isPastFixturesLoading ? (
                 <p>Loading past fixtures...</p>
